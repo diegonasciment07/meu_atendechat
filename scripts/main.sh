@@ -59,6 +59,8 @@ show_help() {
     echo -e "  -g, --gerencianet-client-id ID      Client ID do Gerencianet"
     echo -e "  -s, --gerencianet-client-secret SECRET  Client Secret do Gerencianet"
     echo -e "  -p, --gerencianet-pix-key KEY       Chave PIX do Gerencianet"
+    echo -e "  --skip-dependencies       Pula a verificação de dependências"
+    echo -e "  --skip-nginx              Pula a configuração do Nginx"
     echo -e "\n${GREEN}⚙️  Opções para outros comandos:${NC}"
     echo -e "  -n, --name STACK_NAME     Nome da stack (padrão: codatende)"
     echo -e "\n${GREEN}💡 Exemplos:${NC}"
@@ -71,6 +73,10 @@ show_help() {
     echo -e "\n  # 💰 Criar instância com módulo financeiro habilitado"
     echo -e "  $0 up -n codatende-finance -e -g CLIENT_ID -s CLIENT_SECRET -p PIX_KEY"
     echo -e "  $0 up --name codatende-finance --enable-financial --gerencianet-client-id CLIENT_ID --gerencianet-client-secret CLIENT_SECRET --gerencianet-pix-key PIX_KEY"
+    echo -e "  # 🚀 Pular verificação de dependências"
+    echo -e "  $0 up -n codatende-local --skip-dependencies"
+    echo -e "  # 🚀 Pular configuração do Nginx"
+    echo -e "  $0 up -n codatende-local --skip-nginx"
     echo -e "\n  # 🔄 Atualizar instância (usa configuração salva)"
     echo -e "  $0 update -n codatende1"
     echo -e "  $0 update codatende1"
@@ -123,6 +129,12 @@ parse_args() {
     GERENCIANET_CLIENT_ID=""
     GERENCIANET_CLIENT_SECRET=""
     GERENCIANET_PIX_KEY=""
+    
+    # Variável para pular verificação de dependências
+    SKIP_DEPENDENCIES="false"
+    
+    # Variável para pular configuração do nginx
+    SKIP_NGINX="false"
     
     # Verifica se o primeiro argumento não é uma flag (compatibilidade com formato antigo)
     if [[ ${#args[@]} -gt 0 && ! "${args[0]}" =~ ^- ]]; then
@@ -202,6 +214,14 @@ parse_args() {
             -p|--gerencianet-pix-key)
                 GERENCIANET_PIX_KEY="${args[$((i+1))]}"
                 i=$((i+2))
+                ;;
+            --skip-dependencies)
+                SKIP_DEPENDENCIES="true"
+                i=$((i+1))
+                ;;
+            --skip-nginx)
+                SKIP_NGINX="true"
+                i=$((i+1))
                 ;;
             -h|--help)
                 show_help
