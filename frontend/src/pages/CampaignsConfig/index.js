@@ -227,13 +227,13 @@ const CampaignsConfig = () => {
               </FormControl>
             </Grid>
             <Grid xs={12} className={classes.textRight} item>
-              <Button
+              {/* <Button
                 onClick={() => setShowVariablesForm(!showVariablesForm)}
                 color="primary"
                 style={{ marginRight: 10 }}
               >
                 {i18n.t("campaigns.config.addVariable")}
-              </Button>
+              </Button> */}
               <Button
                 onClick={saveSettings}
                 color="primary"
