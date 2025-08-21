@@ -706,7 +706,7 @@ const handleOpenAi = async (
 
   const messages = await Message.findAll({
     where: { ticketId: ticket.id },
-    order: [["createdAt", "DESC"]],
+    order: [["createdAt", "ASC"]],
     limit: maxMessages
   });
 
@@ -753,10 +753,12 @@ const handleOpenAi = async (
         .trim();
     }
 
-    const sentMessage = await wbot.sendMessage(msg.key.remoteJid!, {
-      text: response!
-    });
-    await verifyMessage(sentMessage!, ticket, contact);
+    if (response) {
+      const sentMessage = await wbot.sendMessage(msg.key.remoteJid!, {
+        text: response
+      });
+      await verifyMessage(sentMessage!, ticket, contact);
+    }
 
     /*
     if (prompt.voice === "texto") {
