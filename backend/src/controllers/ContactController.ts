@@ -101,8 +101,9 @@ export const storeUpload = async (req: Request, res: Response) : Promise<Respons
   });
 
   const promises = contacts.map(async contact => {
+    if(!contact.Nome || !contact.Telefone) return;
 
-    const newContact : ContactData = {name: contact.Nome, number: contact.Telefone.replace(/\D/g, '')}
+    const newContact : ContactData = {name: contact.Nome, number: String(contact.Telefone).replace(/\D/g, '')}
 
     try{
 
