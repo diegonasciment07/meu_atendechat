@@ -28,6 +28,8 @@ import FilesOptions from './models/FilesOptions';
 import { addSeconds, differenceInSeconds } from "date-fns";
 import formatBody from "./helpers/Mustache";
 import { ClosedAllOpenTickets } from "./services/WbotServices/wbotClosedTickets";
+import FindOrCreateTicketService from "./services/TicketServices/FindOrCreateTicketService";
+import FindOrCreateATicketTrakingService from "./services/TicketServices/FindOrCreateATicketTrakingService";
 
 
 const nodemailer = require('nodemailer');
@@ -271,11 +273,24 @@ async function handleSendScheduledMessage(job) {
       filePath = path.resolve("public", schedule.mediaPath);
     }
 
+    let ticket = await FindOrCreateTicketService(schedule.contact, whatsapp.id!, 0, schedule.companyId);
+
+    ticket = await ticket.update(
+      { companyId: schedule.companyId, queueId: null, userId: null, whatsappId: whatsapp.id!, status: "pending" },
+      { where: { id: ticket.id } }
+    );
+
+    await FindOrCreateATicketTrakingService({
+      ticketId: ticket.id,
+      companyId: schedule.companyId,
+      whatsappId: whatsapp?.id
+    });
+
     await SendMessage(whatsapp, {
       number: schedule.contact.number,
       body: formatBody(schedule.body, schedule.contact),
       mediaPath: filePath
-    });
+    }, "\u2064");
 
     await scheduleRecord?.update({
       sentAt: moment().format("YYYY-MM-DD HH:mm"),
@@ -284,6 +299,16 @@ async function handleSendScheduledMessage(job) {
 
     logger.info(`[🧵] Mensagem agendada enviada para: ${schedule.contact.name}`);
     sendScheduledMessages.clean(15000, "completed");
+
+    getIO().to(`company-${ticket.companyId}-${ticket.status}`)
+      .to(`queue-${ticket.queueId}-${ticket.status}`)
+      .to(ticket.id.toString())
+      .emit(`company-${ticket.companyId}-ticket`, {
+        action: "update",
+        ticket,
+        ticketId: ticket.id
+      });
+
   } catch (e: any) {
     Sentry.captureException(e);
     await scheduleRecord?.update({
