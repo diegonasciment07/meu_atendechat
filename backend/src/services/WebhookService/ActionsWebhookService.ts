@@ -343,7 +343,7 @@ export const ActionsWebhookService = async (
       }
 
       if (nodeSelected.type === "ticket") {
-        /*const queueId = nodeSelected.data?.data?.id || nodeSelected.data?.id;
+        const queueId = nodeSelected.data?.data?.id || nodeSelected.data?.id;
         const queue = await ShowQueueService(queueId, companyId);
 
         await ticket.update({
@@ -372,57 +372,6 @@ export const ActionsWebhookService = async (
           ticketId: ticket.id,
           companyId
         });
-
-        await CreateLogTicketService({
-          ticketId: ticket.id,
-          type: "queue",
-          queueId: queue.id
-        });
-
-        let settings = await CompaniesSettings.findOne({
-          where: {
-            companyId: companyId
-          }
-        });
-
-        const enableQueuePosition = settings.sendQueuePosition === "enabled";
-
-        if (enableQueuePosition) {
-          const count = await Ticket.findAndCountAll({
-            where: {
-              userId: null,
-              status: "pending",
-              companyId,
-              queueId: queue.id,
-              whatsappId: whatsapp.id,
-              isGroup: false
-            }
-          });
-
-          // Lógica para enviar posição da fila de atendimento
-          const qtd = count.count === 0 ? 1 : count.count;
-
-          const msgFila = `${settings.sendQueuePositionMessage} *${qtd}*`;
-
-          const ticketDetails = await ShowTicketService(ticket.id, companyId);
-
-          const bodyFila = formatBody(`${msgFila}`, ticket.contact);
-
-          await delay(3000);
-          await typeSimulation(ticket, "composing");
-
-          await SendWhatsAppMessage({
-            body: bodyFila,
-            ticket: ticketDetails,
-            quotedMsg: null
-          });
-
-          SetTicketMessagesAsRead(ticketDetails);
-
-          await ticketDetails.update({
-            lastMessage: bodyFila
-          });
-        }*/
       }
 
       if (nodeSelected.type === "singleBlock") {
@@ -484,7 +433,7 @@ export const ActionsWebhookService = async (
               number: numberClient,
               body: "",
               mediaPath:
-                process.env.BACKEND_URL.includes("http://localhost")
+                process.env.BACKEND_URL === "http://localhost:8090"
                   ? `${__dirname.split("src")[0].split("\\").join("/")}public/${
                       nodeSelected.data.elements.filter(
                         item => item.number === elementNowSelected
@@ -558,6 +507,10 @@ export const ActionsWebhookService = async (
             await intervalWhats("1");
           }
         }
+      }
+
+      if (nodeSelected.type === "interval") {
+        await intervalWhats(nodeSelected.data.sec || "1");
       }
 
       let isRandomizer: boolean;
