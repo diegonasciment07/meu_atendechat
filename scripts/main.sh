@@ -117,8 +117,8 @@ parse_args() {
     TAB_NAME="Atendechat"
     
     # Variáveis do módulo financeiro
-    ENABLE_FINANCIAL="true"
-    GERENCIANET_SANDBOX="true"
+    ENABLE_FINANCIAL="false"
+    GERENCIANET_SANDBOX="false"
     GERENCIANET_PIX_CERT="production-cert"
     GERENCIANET_CLIENT_ID=""
     GERENCIANET_CLIENT_SECRET=""
