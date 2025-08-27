@@ -28,6 +28,8 @@ import FilesOptions from './models/FilesOptions';
 import { addSeconds, differenceInSeconds } from "date-fns";
 import formatBody from "./helpers/Mustache";
 import { ClosedAllOpenTickets } from "./services/WbotServices/wbotClosedTickets";
+import FindOrCreateTicketService from "./services/TicketServices/FindOrCreateTicketService";
+import FindOrCreateATicketTrakingService from "./services/TicketServices/FindOrCreateATicketTrakingService";
 
 
 const nodemailer = require('nodemailer');
@@ -72,7 +74,14 @@ export const sendScheduledMessages = new BullQueue(
   connection
 );
 
-export const campaignQueue = new BullQueue("CampaignQueue", connection);
+export const campaignQueue = new BullQueue("CampaignQueue", connection, {
+  settings: {
+    lockDuration: 30000, // 30 segundos de lock
+    lockRenewTime: 15000, // Renova lock a cada 15 segundos
+    stalledInterval: 30000, // Verifica jobs travados
+    maxStalledCount: 1
+  }
+});
 
 async function handleSendMessage(job) {
   try {
@@ -271,11 +280,24 @@ async function handleSendScheduledMessage(job) {
       filePath = path.resolve("public", schedule.mediaPath);
     }
 
+    let ticket = await FindOrCreateTicketService(schedule.contact, whatsapp.id!, 0, schedule.companyId);
+
+    ticket = await ticket.update(
+      { companyId: schedule.companyId, queueId: null, userId: null, whatsappId: whatsapp.id!, status: "pending" },
+      { where: { id: ticket.id } }
+    );
+
+    await FindOrCreateATicketTrakingService({
+      ticketId: ticket.id,
+      companyId: schedule.companyId,
+      whatsappId: whatsapp?.id
+    });
+
     await SendMessage(whatsapp, {
       number: schedule.contact.number,
       body: formatBody(schedule.body, schedule.contact),
       mediaPath: filePath
-    });
+    }, "\u2064");
 
     await scheduleRecord?.update({
       sentAt: moment().format("YYYY-MM-DD HH:mm"),
@@ -284,6 +306,16 @@ async function handleSendScheduledMessage(job) {
 
     logger.info(`[🧵] Mensagem agendada enviada para: ${schedule.contact.name}`);
     sendScheduledMessages.clean(15000, "completed");
+
+    getIO().to(`company-${ticket.companyId}-${ticket.status}`)
+      .to(`queue-${ticket.queueId}-${ticket.status}`)
+      .to(ticket.id.toString())
+      .emit(`company-${ticket.companyId}-ticket`, {
+        action: "update",
+        ticket,
+        ticketId: ticket.id
+      });
+
   } catch (e: any) {
     Sentry.captureException(e);
     await scheduleRecord?.update({
@@ -512,12 +544,34 @@ async function verifyAndFinalizeCampaign(campaign) {
 }
 
 function calculateDelay(index, baseDelay, longerIntervalAfter, greaterInterval, messageInterval) {
-  const diffSeconds = differenceInSeconds(baseDelay, new Date());
-  if (index > longerIntervalAfter) {
-    return diffSeconds * 1000 + greaterInterval
+  // Calcula o tempo base até o scheduledAt
+  const now = new Date();
+  const scheduledTime = new Date(baseDelay);
+  const baseDelayMs = Math.max(0, scheduledTime.getTime() - now.getTime());
+  
+  // Calcula o delay adicional baseado no índice
+  let additionalDelay = 0;
+  
+  if (index >= longerIntervalAfter) {
+    // Após o limite, usa o intervalo maior
+    additionalDelay = (index - longerIntervalAfter) * greaterInterval + (longerIntervalAfter * messageInterval);
   } else {
-    return diffSeconds * 1000 + messageInterval
+    // Antes do limite, usa o intervalo normal
+    additionalDelay = index * messageInterval;
   }
+  
+  const totalDelay = Math.max(0, baseDelayMs + additionalDelay);
+  
+  logger.info(`[⏰] - Calculando delay para índice ${index}:`, {
+    baseDelayMs: Math.round(baseDelayMs / 1000) + 's',
+    additionalDelay: Math.round(additionalDelay / 1000) + 's',
+    totalDelay: Math.round(totalDelay / 1000) + 's',
+    scheduledTime: scheduledTime.toISOString(),
+    now: now.toISOString(),
+    willExecuteAt: new Date(now.getTime() + totalDelay).toISOString()
+  });
+  
+  return totalDelay;
 }
 
 async function getCampaignContacts(campaignId: number, batchSize: number = 100, offset: number = 0) {
@@ -570,6 +624,7 @@ async function handleProcessCampaign(job) {
     }
 
     const settings = await getSettings(campaign);
+
     const batchSize = process.env.CAMPAIGN_BATCH_SIZE ? parseInt(process.env.CAMPAIGN_BATCH_SIZE) : 30;
     const rateLimit = process.env.CAMPAIGN_RATE_LIMIT ? parseInt(process.env.CAMPAIGN_RATE_LIMIT) : 5000;
     let offset = 0;
@@ -592,7 +647,7 @@ async function handleProcessCampaign(job) {
       const baseDelay = campaign.scheduledAt;
       const longerIntervalAfter = parseToMilliseconds(settings.longerIntervalAfter);
       const greaterInterval = parseToMilliseconds(settings.greaterInterval);
-      const messageInterval = settings.messageInterval;
+      const messageInterval = parseToMilliseconds(settings.messageInterval);
 
       const queuePromises = contacts.map((contact, index) => {
         const delay = calculateDelay(
@@ -677,7 +732,7 @@ async function handlePrepareContact(job) {
     const { contactId, campaignId, delay, variables }: PrepareContactData =
       job.data;
     
-    logger.info(`[🏁] - Iniciou a preparação do contato | contatoId: ${contactId} CampanhaID: ${campaignId}`);
+    logger.info(`[🏁] - Iniciou a preparação do contato | contatoId: ${contactId} CampanhaID: ${campaignId} | Delay: ${Math.round(delay / 1000)}s`);
 
     const campaign = await getCampaign(campaignId);
     if (!campaign) {
@@ -699,8 +754,9 @@ async function handlePrepareContact(job) {
       }
     });
 
-    if (existingShipping && existingShipping.deliveredAt) {
-      logger.info(`[📊] - Contato ${contactId} já foi enviado na campanha ${campaignId}`);
+    // Verifica se já existe um job agendado
+    if (existingShipping && existingShipping.jobId) {
+      logger.info(`[📊] - Contato já possui job agendado`);
       return;
     }
 
@@ -741,6 +797,15 @@ async function handlePrepareContact(job) {
     if (
       record.deliveredAt === null
     ) {
+      logger.info(`[⏰] - Agendando envio para contato ${contactId} com delay de ${Math.round(delay / 1000)}s`);
+      
+      // Verifica se o delay é válido
+      let finalDelay = delay;
+      if (finalDelay <= 0) {
+        logger.warn(`[⚠️] - Delay inválido para contato ${contactId}: ${finalDelay}ms. Usando delay mínimo de 1s`);
+        finalDelay = 1000;
+      }
+      
       const nextJob = await campaignQueue.add(
         "DispatchCampaign",
         {
@@ -749,11 +814,13 @@ async function handlePrepareContact(job) {
           contactListItemId: contactId
         },
         {
-          delay
+          delay: finalDelay
         }
       );
 
       await record.update({ jobId: nextJob.id });
+      
+      logger.info(`[✅] - Job agendado com sucesso | JobID: ${nextJob.id} | Delay: ${Math.round(finalDelay / 1000)}s | Executará em: ${new Date(Date.now() + finalDelay).toISOString()}`);
     }
 
     await verifyAndFinalizeCampaign(campaign);
@@ -774,7 +841,8 @@ async function handleDispatchCampaign(job) {
     const { data } = job;
     const { campaignShippingId, campaignId }: DispatchCampaignData = data;
     
-    logger.info(`[🏁] - Disparando campanha | CampaignShippingId: ${campaignShippingId} CampanhaID: ${campaignId}`);
+    const now = new Date();
+    logger.info(`[🏁] - Disparando campanha | CampaignShippingId: ${campaignShippingId} CampanhaID: ${campaignId} | Executado em: ${now.toISOString()}`);
 
     const campaign = await getCampaign(campaignId);
     if (!campaign) {
@@ -810,6 +878,18 @@ async function handleDispatchCampaign(job) {
 
     if (!campaignShipping) {
       logger.error(`[🚨] - CampaignShipping ${campaignShippingId} não encontrado`);
+      return;
+    }
+
+    // Verifica se já foi entregue
+    if (campaignShipping.deliveredAt) {
+      logger.info(`[⚠️] - Campanha já foi entregue`);
+      return;
+    }
+
+    // Verifica se o job atual é o mesmo que foi agendado
+    if (campaignShipping.jobId && campaignShipping.jobId !== job.id) {
+      logger.info(`[⚠️] - Job diferente agendado`);
       return;
     }
 
@@ -856,7 +936,11 @@ async function handleDispatchCampaign(job) {
 
     logger.info(`[🚩] - Atualizando campanha para enviada... | CampaignShippingId: ${campaignShippingId} CampanhaID: ${campaignId}`);
 
-    await campaignShipping.update({ deliveredAt: moment() });
+    // Marca como em processamento ANTES de enviar a mensagem
+    await campaignShipping.update({ 
+      deliveredAt: new Date(),
+      jobId: job.id 
+    });
 
     await verifyAndFinalizeCampaign(campaign);
 

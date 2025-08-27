@@ -13,7 +13,8 @@ export type MessageData = {
 
 export const SendMessage = async (
   whatsapp: Whatsapp,
-  messageData: MessageData
+  messageData: MessageData,
+  invisibleCharacter?: string
 ): Promise<any> => {
   try {
     const wbot = await GetWhatsappWbot(whatsapp);
@@ -34,7 +35,7 @@ export const SendMessage = async (
         });
       }
     } else {
-      const body = `\u200e ${messageData.body}`;
+      const body = `${invisibleCharacter || "\u200e"} ${messageData.body}`;
       message = await wbot.sendMessage(chatId, { text: body });
     }
 

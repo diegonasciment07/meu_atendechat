@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Cores para output
 GREEN='\033[0;32m'

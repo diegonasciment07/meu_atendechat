@@ -546,17 +546,17 @@ const FlowBuilderConfig = () => {
   };
 
   const actions = [
-    {
-      icon: (
-        <RocketLaunch
-          sx={{
-            color: "#3ABA38",
-          }}
-        />
-      ),
-      name: "Inicio",
-      type: "start",
-    },
+    // {
+    //   icon: (
+    //     <RocketLaunch
+    //       sx={{
+    //         color: "#3ABA38",
+    //       }}
+    //     />
+    //   ),
+    //   name: "Inicio",
+    //   type: "start",
+    // },
     {
       icon: (
         <LibraryBooks
@@ -612,44 +612,44 @@ const FlowBuilderConfig = () => {
       name: "Ticket",
       type: "ticket",
     },
-    {
-      icon: (
-        <Box
-          component="img"
-          sx={{
-            width: 24,
-            height: 24,
-            color: "#3aba38",
-          }}
-          src={typebotIcon}
-          alt="icon"
-        />
-      ),
-      name: "TypeBot",
-      type: "typebot",
-    },
-    {
-      icon: (
-        <SiOpenai
-          sx={{
-            color: "#F7953B",
-          }}
-        />
-      ),
-      name: "OpenAI",
-      type: "openai",
-    },
-    {
-      icon: (
-        <BallotIcon
-          sx={{
-            color: "#F7953B",
-          }}
-        />
-      ),
-      name: "Pergunta",
-      type: "question",
-    },
+    // {
+    //   icon: (
+    //     <Box
+    //       component="img"
+    //       sx={{
+    //         width: 24,
+    //         height: 24,
+    //         color: "#3aba38",
+    //       }}
+    //       src={typebotIcon}
+    //       alt="icon"
+    //     />
+    //   ),
+    //   name: "TypeBot",
+    //   type: "typebot",
+    // },
+    // {
+    //   icon: (
+    //     <SiOpenai
+    //       sx={{
+    //         color: "#F7953B",
+    //       }}
+    //     />
+    //   ),
+    //   name: "OpenAI",
+    //   type: "openai",
+    // },
+    // {
+    //   icon: (
+    //     <BallotIcon
+    //       sx={{
+    //         color: "#F7953B",
+    //       }}
+    //     />
+    //   ),
+    //   name: "Pergunta",
+    //   type: "question",
+    // },
   ];
 
   const clickActions = (type) => {
