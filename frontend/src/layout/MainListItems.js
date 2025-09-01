@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useReducer, useState } from "react";
-import { Link as RouterLink, useHistory } from "react-router-dom";
+import { Link as RouterLink, useHistory, useLocation } from "react-router-dom";
 
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
@@ -40,7 +40,7 @@ import api from "../services/api";
 import BorderColorIcon from '@material-ui/icons/BorderColor';
 import ToDoList from "../pages/ToDoList/";
 import toastError from "../errors/toastError";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { AccountTree, AllInclusive, AttachFile, BlurCircular, Chat, DeviceHubOutlined, Schedule } from '@material-ui/icons';
 import usePlans from "../hooks/usePlans";
 import Typography from "@material-ui/core/Typography";
@@ -52,11 +52,34 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "-15px",
     marginBottom: "-10px",
   },
+  activeMenuItem: {
+    background: "radial-gradient(circle, #2192AD 0%, #21CCAD 100%)",
+    borderRadius: 12,
+    margin: "4px 8px",
+    color: "#FFFFFF !important",
+    "&:hover": {
+      background: "radial-gradient(circle, #2192AD 0%, #21CCAD 100%)",
+    },
+    "& .MuiListItemIcon-root": {
+      color: "#FFFFFF",
+    },
+    "& .MuiListItemText-primary": {
+      color: "#FFFFFF",
+      fontWeight: 600,
+    },
+  },
 }));
 
 
 function ListItemLink(props) {
   const { icon, primary, to, className } = props;
+  const classes = useStyles();
+  const location = useLocation();
+  const theme = useTheme();
+  
+  // Verifica se a rota atual está ativa
+  const isActive = location.pathname === to || 
+                  (to !== "/" && location.pathname.startsWith(to));
 
   const renderLink = React.useMemo(
     () =>
@@ -68,9 +91,15 @@ function ListItemLink(props) {
 
   return (
     <li>
-      <ListItem button dense component={renderLink} className={className}>
-        {icon ? <ListItemIcon>{icon}</ListItemIcon> : null}
-        <ListItemText primary={primary} />
+      <ListItem 
+        button 
+        dense 
+        component={renderLink} 
+        className={`${className} ${isActive ? classes.activeMenuItem : ""}`}
+        style={isActive ? {} : {color: theme.palette.sidebarText}}
+      >
+        {icon ? <ListItemIcon style={isActive ? {} : {color: theme.palette.sidebarIcon}}>{icon}</ListItemIcon> : null}
+        <ListItemText primary={primary} style={isActive ? {} : {color: theme.palette.sidebarText}} />
       </ListItem>
     </li>
   );
@@ -134,6 +163,7 @@ const reducer = (state, action) => {
 
 const MainListItems = (props) => {
   const classes = useStyles();
+  const theme = useTheme();
   const { drawerClose, collapsed } = props;
   const { whatsApps } = useContext(WhatsAppsContext);
   const { user, handleLogout } = useContext(AuthContext);
@@ -142,7 +172,9 @@ const MainListItems = (props) => {
   const [showCampaigns, setShowCampaigns] = useState(false);
   const [showKanban, setShowKanban] = useState(false);
   const [showOpenAi, setShowOpenAi] = useState(false);
-  const [showIntegrations, setShowIntegrations] = useState(false); const history = useHistory();
+  const [showIntegrations, setShowIntegrations] = useState(false); 
+  const history = useHistory();
+  const location = useLocation();
   const [showSchedules, setShowSchedules] = useState(false);
   const [showInternalChat, setShowInternalChat] = useState(false);
   const [showExternalApi, setShowExternalApi] = useState(false);
@@ -373,17 +405,20 @@ const MainListItems = (props) => {
                 <ListItem
                   button
                   onClick={() => setOpenCampaignSubmenu((prev) => !prev)}
+                  className={location.pathname.includes('/campaigns') || location.pathname.includes('/contact-lists') || location.pathname.includes('/campaigns-config') ? classes.activeMenuItem : ""}
+                  style={!(location.pathname.includes('/campaigns') || location.pathname.includes('/contact-lists') || location.pathname.includes('/campaigns-config')) ? {color: theme.palette.sidebarText} : {}}
                 >
-                  <ListItemIcon>
+                  <ListItemIcon style={!(location.pathname.includes('/campaigns') || location.pathname.includes('/contact-lists') || location.pathname.includes('/campaigns-config')) ? {color: theme.palette.sidebarIcon} : {}}>
                     <EventAvailableIcon />
                   </ListItemIcon>
                   <ListItemText
                     primary={i18n.t("mainDrawer.listItems.campaigns")}
+                    style={!(location.pathname.includes('/campaigns') || location.pathname.includes('/contact-lists') || location.pathname.includes('/campaigns-config')) ? {color: theme.palette.sidebarText} : {}}
                   />
                   {openCampaignSubmenu ? (
-                    <ExpandLessIcon />
+                    <ExpandLessIcon style={{color: theme.palette.sidebarIcon}} />
                   ) : (
-                    <ExpandMoreIcon />
+                    <ExpandMoreIcon style={{color: theme.palette.sidebarIcon}} />
                   )}
                 </ListItem>
                 <Collapse
@@ -393,29 +428,38 @@ const MainListItems = (props) => {
                   unmountOnExit
                 >
                   <List component="div" disablePadding>
-                    <ListItem onClick={() => history.push("/campaigns")} button>
-                      <ListItemIcon>
+                    <ListItem 
+                      onClick={() => history.push("/campaigns")} 
+                      button
+                      className={location.pathname === '/campaigns' ? classes.activeMenuItem : ""}
+                      style={location.pathname !== '/campaigns' ? {color: theme.palette.sidebarText} : {}}
+                    >
+                      <ListItemIcon style={location.pathname !== '/campaigns' ? {color: theme.palette.sidebarIcon} : {}}>
                         <ListIcon />
                       </ListItemIcon>
-                      <ListItemText primary="Listagem" />
+                      <ListItemText primary="Listagem" style={location.pathname !== '/campaigns' ? {color: theme.palette.sidebarText} : {}} />
                     </ListItem>
                     <ListItem
                       onClick={() => history.push("/contact-lists")}
                       button
+                      className={location.pathname === '/contact-lists' ? classes.activeMenuItem : ""}
+                      style={location.pathname !== '/contact-lists' ? {color: theme.palette.sidebarText} : {}}
                     >
-                      <ListItemIcon>
+                      <ListItemIcon style={location.pathname !== '/contact-lists' ? {color: theme.palette.sidebarIcon} : {}}>
                         <PeopleIcon />
                       </ListItemIcon>
-                      <ListItemText primary="Listas de Contatos" />
+                      <ListItemText primary="Listas de Contatos" style={location.pathname !== '/contact-lists' ? {color: theme.palette.sidebarText} : {}} />
                     </ListItem>
                     <ListItem
                       onClick={() => history.push("/campaigns-config")}
                       button
+                      className={location.pathname === '/campaigns-config' ? classes.activeMenuItem : ""}
+                      style={location.pathname !== '/campaigns-config' ? {color: theme.palette.sidebarText} : {}}
                     >
-                      <ListItemIcon>
+                      <ListItemIcon style={location.pathname !== '/campaigns-config' ? {color: theme.palette.sidebarIcon} : {}}>
                         <SettingsOutlinedIcon />
                       </ListItemIcon>
-                      <ListItemText primary="Configurações" />
+                      <ListItemText primary="Configurações" style={location.pathname !== '/campaigns-config' ? {color: theme.palette.sidebarText} : {}} />
                     </ListItem>
                   </List>
                 </Collapse>
@@ -423,17 +467,20 @@ const MainListItems = (props) => {
                 <ListItem
                     button
                     onClick={() => setOpenFlowsSubmenu((prev) => !prev)}
+                    className={location.pathname.includes('/phrase-lists') || location.pathname.includes('/flowbuilders') ? classes.activeMenuItem : ""}
+                    style={!(location.pathname.includes('/phrase-lists') || location.pathname.includes('/flowbuilders')) ? {color: theme.palette.sidebarText} : {}}
                 >
-                  <ListItemIcon>
+                  <ListItemIcon style={!(location.pathname.includes('/phrase-lists') || location.pathname.includes('/flowbuilders')) ? {color: theme.palette.sidebarIcon} : {}}>
                     <AccountTree />
                   </ListItemIcon>
                   <ListItemText
                       primary={i18n.t("mainDrawer.listItems.flows")}
+                      style={!(location.pathname.includes('/phrase-lists') || location.pathname.includes('/flowbuilders')) ? {color: theme.palette.sidebarText} : {}}
                   />
-                  {openCampaignSubmenu ? (
-                      <ExpandLessIcon />
+                  {openFlowsSubmenu ? (
+                      <ExpandLessIcon style={{color: theme.palette.sidebarIcon}} />
                   ) : (
-                      <ExpandMoreIcon />
+                      <ExpandMoreIcon style={{color: theme.palette.sidebarIcon}} />
                   )}
                 </ListItem>
 
@@ -447,21 +494,25 @@ const MainListItems = (props) => {
                     <ListItem
                         onClick={() => history.push("/phrase-lists")}
                         button
+                        className={location.pathname === '/phrase-lists' ? classes.activeMenuItem : ""}
+                        style={location.pathname !== '/phrase-lists' ? {color: theme.palette.sidebarText} : {}}
                     >
-                      <ListItemIcon>
+                      <ListItemIcon style={location.pathname !== '/phrase-lists' ? {color: theme.palette.sidebarIcon} : {}}>
                         <EventAvailableIcon />
                       </ListItemIcon>
-                      <ListItemText primary="Campanha" />
+                      <ListItemText primary="Campanha" style={location.pathname !== '/phrase-lists' ? {color: theme.palette.sidebarText} : {}} />
                     </ListItem>
 
                     <ListItem
                         onClick={() => history.push("/flowbuilders")}
                         button
+                        className={location.pathname === '/flowbuilders' ? classes.activeMenuItem : ""}
+                        style={location.pathname !== '/flowbuilders' ? {color: theme.palette.sidebarText} : {}}
                     >
-                      <ListItemIcon>
+                      <ListItemIcon style={location.pathname !== '/flowbuilders' ? {color: theme.palette.sidebarIcon} : {}}>
                         <ShapeLine />
                       </ListItemIcon>
-                      <ListItemText primary="Conversa" />
+                      <ListItemText primary="Conversa" style={location.pathname !== '/flowbuilders' ? {color: theme.palette.sidebarText} : {}} />
                     </ListItem>
                   </List>
                 </Collapse>

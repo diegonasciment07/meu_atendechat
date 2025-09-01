@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
 
   noTicketsText: {
     textAlign: "center",
-    color: "rgb(104, 121, 146)",
+    color: theme.palette.sidebarIcon,
     fontSize: "14px",
     lineHeight: "1.4",
   },
@@ -53,6 +53,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "16px",
     fontWeight: "600",
     margin: "0px",
+    color: theme.palette.sidebarText,
   },
 
   contactNameWrapper: {
@@ -98,6 +99,27 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
     top: "0%",
     left: "0%",
+  },
+
+  ticketListItem: {
+    backgroundColor: theme.palette.sidebarBackground,
+    "&:hover": {
+      backgroundColor: theme.palette.mode === 'dark' ? '#252525' : '#f5f5f5',
+    },
+    "&.Mui-selected": {
+      backgroundColor: theme.palette.mode === 'dark' ? '#333' : '#e3f2fd',
+      "&:hover": {
+        backgroundColor: theme.palette.mode === 'dark' ? '#333' : '#e3f2fd',
+      },
+    },
+  },
+
+  ticketText: {
+    color: theme.palette.sidebarText,
+  },
+
+  ticketSecondaryText: {
+    color: theme.palette.sidebarIcon,
   },
 }));
 
@@ -147,7 +169,7 @@ const TicketListItem = ({ ticket }) => {
           handleSelectTicket(ticket);
         }}
         selected={ticketId && +ticketId === ticket.id}
-        className={clsx(classes.ticket, {
+        className={clsx(classes.ticket, classes.ticketListItem, {
           [classes.pendingTicket]: ticket.status === "pending",
         })}
       >
@@ -172,7 +194,7 @@ const TicketListItem = ({ ticket }) => {
                 noWrap
                 component="span"
                 variant="body2"
-                color="textPrimary"
+                className={classes.ticketText}
               >
                 {ticket.contact.name}
               </Typography>

@@ -19,6 +19,7 @@ import AccessAlarmIcon from '@material-ui/icons/AccessAlarm';
 import TimerIcon from '@material-ui/icons/Timer';
 
 import { makeStyles } from "@material-ui/core/styles";
+import { roundedStyles } from "../../utils/roundedStyles";
 import { grey, blue } from "@material-ui/core/colors";
 import { toast } from "react-toastify";
 
@@ -50,6 +51,7 @@ const useStyles = makeStyles((theme) => ({
     height: 240,
     overflowY: "auto",
     ...theme.scrollbarStyles,
+    ...roundedStyles.paper, // Bordas arredondadas
   },
   cardAvatar: {
     fontSize: "55px",
@@ -57,6 +59,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#ffffff",
     width: theme.spacing(7),
     height: theme.spacing(7),
+    ...roundedStyles.rounded, // Avatar arredondado
   },
   cardTitle: {
     fontSize: "18px",
@@ -75,6 +78,34 @@ const useStyles = makeStyles((theme) => ({
   selectContainer: {
     width: "100%",
     textAlign: "left",
+  },
+  
+  dateTextField: {
+    "& .MuiInputLabel-root": {
+      color: theme.palette.mode === 'dark' ? "#21C8AD" : undefined,
+    },
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": {
+        borderColor: theme.palette.mode === 'dark' ? "#21C8AD" : undefined,
+      },
+      "&:hover fieldset": {
+        borderColor: theme.palette.mode === 'dark' ? "#21C8AD" : undefined,
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: theme.palette.mode === 'dark' ? "#21C8AD" : undefined,
+      },
+    },
+    "& .MuiInputBase-input": {
+      color: theme.palette.mode === 'dark' ? "#21C8AD" : undefined,
+    },
+  },
+
+  filterButton: {
+    backgroundColor: theme.palette.mode === 'dark' ? "#21C8AD" : undefined,
+    color: theme.palette.mode === 'dark' ? "#ffffff" : undefined,
+    "&:hover": {
+      backgroundColor: theme.palette.mode === 'dark' ? "#1a9d87" : undefined,
+    },
   },
   iframeDashboard: {
     width: "100%",
@@ -310,7 +341,7 @@ const Dashboard = () => {
               type="date"
               value={dateFrom}
               onChange={(e) => setDateFrom(e.target.value)}
-              className={classes.fullWidth}
+              className={`${classes.fullWidth} ${classes.dateTextField}`}
               InputLabelProps={{
                 shrink: true,
               }}
@@ -322,7 +353,7 @@ const Dashboard = () => {
               type="date"
               value={dateTo}
               onChange={(e) => setDateTo(e.target.value)}
-              className={classes.fullWidth}
+              className={`${classes.fullWidth} ${classes.dateTextField}`}
               InputLabelProps={{
                 shrink: true,
               }}
@@ -393,7 +424,7 @@ const Dashboard = () => {
                   <CallIcon
                     style={{
                       fontSize: 100,
-                      color: "#FFFFFF",
+                      color: "#21C8AD",
                     }}
                   />
                 </Grid>
@@ -430,7 +461,7 @@ const Dashboard = () => {
                   <HourglassEmptyIcon
                     style={{
                       fontSize: 100,
-                      color: "#FFFFFF",
+                      color: "#21C8AD",
                     }}
                   />
                 </Grid>
@@ -509,7 +540,7 @@ const Dashboard = () => {
                   <CheckCircleIcon
                     style={{
                       fontSize: 100,
-                      color: "#FFFFFF",
+                      color: "#21C8AD",
                     }}
                   />
                 </Grid>
@@ -546,7 +577,7 @@ const Dashboard = () => {
                   <GroupAddIcon
                     style={{
                       fontSize: 100,
-                      color: "#FFFFFF",
+                      color: "#21C8AD",
                     }}
                   />
                 </Grid>
@@ -584,7 +615,7 @@ const Dashboard = () => {
                   <AccessAlarmIcon
                     style={{
                       fontSize: 100,
-                      color: "#FFFFFF",
+                      color: "#21C8AD",
                     }}
                   />
                 </Grid>
@@ -621,7 +652,7 @@ const Dashboard = () => {
                   <TimerIcon
                     style={{
                       fontSize: 100,
-                      color: "#FFFFFF",
+                      color: "#21C8AD",
                     }}
                   />
                 </Grid>
@@ -655,7 +686,8 @@ const Dashboard = () => {
               loading={loading}
               onClick={() => fetchData()}
               variant="contained"
-              color="primary"
+              color="#21c8ad"
+              className={classes.filterButton}
             >
               {i18n.t("dashboard.buttons.filter")}
             </ButtonWithSpinner>
