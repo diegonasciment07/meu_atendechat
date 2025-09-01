@@ -5,3 +5,7 @@ build/
 instances.json
 brands/
 certificates/
+# backups
+*.old
+# lockfile alternativo
+frontend/yarn.lock
