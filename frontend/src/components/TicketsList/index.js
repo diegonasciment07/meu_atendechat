@@ -33,15 +33,14 @@ const useStyles = makeStyles((theme) => ({
 		flex: 1,
 		overflowY: "scroll",
 		...theme.scrollbarStyles,
-		borderTop: `2px solid ${theme.palette.mode === 'dark' ? '#333' : 'rgba(0, 0, 0, 0.12)'}`,
-		backgroundColor: theme.palette.sidebarBackground,
+		borderTop: "2px solid rgba(0, 0, 0, 0.12)",
 	},
 
 	ticketsListHeader: {
-		color: theme.palette.sidebarText,
+		color: "rgb(67, 83, 105)",
 		zIndex: 2,
-		backgroundColor: theme.palette.sidebarBackground,
-		borderBottom: `1px solid ${theme.palette.mode === 'dark' ? '#333' : 'rgba(0, 0, 0, 0.12)'}`,
+		backgroundColor: "white",
+		borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
 		display: "flex",
 		alignItems: "center",
 		justifyContent: "space-between",
@@ -49,14 +48,14 @@ const useStyles = makeStyles((theme) => ({
 
 	ticketsCount: {
 		fontWeight: "normal",
-		color: theme.palette.sidebarIcon,
+		color: "rgb(104, 121, 146)",
 		marginLeft: "8px",
 		fontSize: "14px",
 	},
 
 	noTicketsText: {
 		textAlign: "center",
-		color: theme.palette.sidebarIcon,
+		color: "rgb(104, 121, 146)",
 		fontSize: "14px",
 		lineHeight: "1.4",
 	},
@@ -66,7 +65,6 @@ const useStyles = makeStyles((theme) => ({
 		fontSize: "16px",
 		fontWeight: "600",
 		margin: "0px",
-		color: theme.palette.sidebarText,
 	},
 
 	noTicketsDiv: {

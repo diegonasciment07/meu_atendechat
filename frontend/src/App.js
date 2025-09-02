@@ -31,55 +31,6 @@ const App = () => {
 
     const theme = createTheme(
         {
-            shape: {
-                borderRadius: 12, // Bordas arredondadas globais
-            },
-            components: {
-                MuiButton: {
-                    styleOverrides: {
-                        root: {
-                            borderRadius: 12,
-                        },
-                    },
-                },
-                MuiPaper: {
-                    styleOverrides: {
-                        root: {
-                            borderRadius: 12,
-                        },
-                    },
-                },
-                MuiCard: {
-                    styleOverrides: {
-                        root: {
-                            borderRadius: 12,
-                        },
-                    },
-                },
-                MuiTextField: {
-                    styleOverrides: {
-                        root: {
-                            '& .MuiOutlinedInput-root': {
-                                borderRadius: 12,
-                            },
-                        },
-                    },
-                },
-                MuiDialog: {
-                    styleOverrides: {
-                        paper: {
-                            borderRadius: 12,
-                        },
-                    },
-                },
-                MuiMenu: {
-                    styleOverrides: {
-                        paper: {
-                            borderRadius: 12,
-                        },
-                    },
-                },
-            },
             scrollbarStyles: {
                 "&::-webkit-scrollbar": {
                     width: '8px',
@@ -87,8 +38,7 @@ const App = () => {
                 },
                 "&::-webkit-scrollbar-thumb": {
                     boxShadow: 'inset 0 0 6px rgba(0, 0, 0, 0.3)',
-                    backgroundColor: "#21EDAD",
-                    borderRadius: 8,
+                    backgroundColor: "#682EE3",
                 },
             },
             scrollbarStylesSoft: {
@@ -96,41 +46,38 @@ const App = () => {
                     width: "8px",
                 },
                 "&::-webkit-scrollbar-thumb": {
-                    backgroundColor: mode === "light" ? "#0A051E" : "#21C9AD",
+                    backgroundColor: mode === "light" ? "#F3F3F3" : "#333333",
                 },
             },
             palette: {
                 type: mode,
-                primary: { main: mode === "light" ? "#161616" : "#1FDCA1" },
-                textPrimary: mode === "light" ? "#21EDAD" : "#0A051E",
-                borderPrimary: mode === "light" ? "#21EDAD" : "#0A051E",
-                dark: { main: mode === "light" ? "#0A051E" : "#30c9a3" },
-                light: { main: mode === "light" ? "#0A051E" : "#0A051E" },
-                tabHeaderBackground: mode === "light" ? "#ebebeb" : "#424242",
-                optionsBackground: mode === "light" ? "#fafafa" : "#161616",
-				options: mode === "light" ? "#fafafa" : "#0A051E",
-				fontecor: mode === "light" ? "#128c7e" : "#0A051E",
-                fancyBackground: mode === "light" ? "#fafafa" : "#161616 ",
-				bordabox: mode === "light" ? "#eee" : "#161616 ",
-				newmessagebox: mode === "light" ? "#eee" : "#161616 ",
-				inputdigita: mode === "light" ? "#e3e3e3" : "#545454",
-				contactdrawer: mode === "light" ? "#e3e3e3" : "#0A051E",
-				announcements: mode === "light" ? "#ededed" : "#161616",
-				login: mode === "light" ? "#f3f3f3" : "#0A051E",
-				announcementspopover: mode === "light" ? "#c9c9c9" : "#0A051E",
-				chatlist: mode === "light" ? "#eee" : "#0A051E",
-				boxlist: mode === "light" ? "#ededed" : "#0A051E",
-				boxchatlist: mode === "light" ? "#ededed" : "#161616",
-                total: mode === "light" ? "#0A051E" : "#222",
-                messageIcons: mode === "light" ? "#21B5AD" : "#cfffdc",
-                inputBackground: mode === "light" ? "#e3e3e3" : "#161616",
-                barraSuperior: mode === "light" ? "linear-gradient(to right, #0A051E, #0A051E , #0A051E)" : "#0A051E",
-				boxticket: mode === "light" ? "#EEE" : "#0A051E",
-				campaigntab: mode === "light" ? "#ededed" : "#0A051E",
-				mediainput: mode === "light" ? "#ededed" : "#21D2AD",
-				sidebarBackground: mode === "light" ? "#ffffff" : "#161616",
-				sidebarText: mode === "light" ? "#333333" : "#ffffff",
-				sidebarIcon: mode === "light" ? "#666666" : "#ffffff",
+                primary: { main: mode === "light" ? "#682EE3" : "#FFFFFF" },
+                textPrimary: mode === "light" ? "#682EE3" : "#FFFFFF",
+                borderPrimary: mode === "light" ? "#682EE3" : "#FFFFFF",
+                dark: { main: mode === "light" ? "#333333" : "#F3F3F3" },
+                light: { main: mode === "light" ? "#F3F3F3" : "#333333" },
+                tabHeaderBackground: mode === "light" ? "#EEE" : "#666",
+                optionsBackground: mode === "light" ? "#fafafa" : "#333",
+				options: mode === "light" ? "#fafafa" : "#666",
+				fontecor: mode === "light" ? "#128c7e" : "#fff",
+                fancyBackground: mode === "light" ? "#fafafa" : "#333",
+				bordabox: mode === "light" ? "#eee" : "#333",
+				newmessagebox: mode === "light" ? "#eee" : "#333",
+				inputdigita: mode === "light" ? "#fff" : "#666",
+				contactdrawer: mode === "light" ? "#fff" : "#666",
+				announcements: mode === "light" ? "#ededed" : "#333",
+				login: mode === "light" ? "#fff" : "#1C1C1C",
+				announcementspopover: mode === "light" ? "#fff" : "#666",
+				chatlist: mode === "light" ? "#eee" : "#666",
+				boxlist: mode === "light" ? "#ededed" : "#666",
+				boxchatlist: mode === "light" ? "#ededed" : "#333",
+                total: mode === "light" ? "#fff" : "#222",
+                messageIcons: mode === "light" ? "grey" : "#F3F3F3",
+                inputBackground: mode === "light" ? "#FFFFFF" : "#333",
+                barraSuperior: mode === "light" ? "linear-gradient(to right, #682EE3, #682EE3 , #682EE3)" : "#666",
+				boxticket: mode === "light" ? "#EEE" : "#666",
+				campaigntab: mode === "light" ? "#ededed" : "#666",
+				mediainput: mode === "light" ? "#ededed" : "#1c1c1c",
             },
             mode,
         },

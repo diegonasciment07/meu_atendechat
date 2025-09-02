@@ -25,7 +25,7 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import logo from "../../assets/logo2.png";
+import logo from "../../assets/logo.png";
 import { i18n } from "../../translate/i18n";
 
 import { openApi } from "../../services/api";
@@ -61,11 +61,6 @@ const useStyles = makeStyles(theme => ({
 	},
 	submit: {
 		margin: theme.spacing(3, 0, 2),
-		backgroundColor: "#21ADAD",
-		color: "white",
-		"&:hover": {
-			backgroundColor: "#1e9999",
-		},
 	},
 }));
 
@@ -235,6 +230,7 @@ const SignUp = () => {
 								type="submit"
 								fullWidth
 								variant="contained"
+								color="primary"
 								className={classes.submit}
 							>
 								{i18n.t("signup.buttons.submit")}

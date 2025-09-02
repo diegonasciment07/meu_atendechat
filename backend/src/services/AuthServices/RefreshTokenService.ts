@@ -33,12 +33,7 @@ export const RefreshTokenService = async (
     const user = await ShowUserService(id);
 
     if (user.tokenVersion !== tokenVersion) {
-      res.clearCookie("jrt", {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'none',
-        path: '/'
-      });
+      res.clearCookie("jrt");
       throw new AppError("ERR_SESSION_EXPIRED", 401);
     }
 
@@ -47,12 +42,7 @@ export const RefreshTokenService = async (
 
     return { user, newToken, refreshToken };
   } catch (err) {
-    res.clearCookie("jrt", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'none',
-      path: '/'
-    });
+    res.clearCookie("jrt");
     throw new AppError("ERR_SESSION_EXPIRED", 401);
   }
 };

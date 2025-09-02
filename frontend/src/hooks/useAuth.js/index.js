@@ -200,38 +200,19 @@ Entre em contato com o Suporte para mais informações! `);
     setLoading(true);
 
     try {
-      // Limpa o token antes de fazer a requisição de logout
-      const currentToken = localStorage.getItem("token");
+      await api.delete("/auth/logout");
+      setIsAuth(false);
+      setUser({});
       localStorage.removeItem("token");
       localStorage.removeItem("companyId");
       localStorage.removeItem("userId");
       localStorage.removeItem("cshow");
-      
-      // Faz a requisição de logout com o token atual
-      if (currentToken) {
-        api.defaults.headers.Authorization = `Bearer ${JSON.parse(currentToken)}`;
-        await api.delete("/auth/logout");
-      }
-      
-      // Limpa completamente a autenticação
       api.defaults.headers.Authorization = undefined;
-      setIsAuth(false);
-      setUser({});
       setLoading(false);
-      
-      // Força redirecionamento para login
-      window.location.href = "/login";
+      history.push("/login");
     } catch (err) {
-      // Mesmo com erro, força logout local
-      localStorage.removeItem("token");
-      localStorage.removeItem("companyId");
-      localStorage.removeItem("userId");
-      localStorage.removeItem("cshow");
-      api.defaults.headers.Authorization = undefined;
-      setIsAuth(false);
-      setUser({});
+      toastError(err);
       setLoading(false);
-      window.location.href = "/login";
     }
   };
 

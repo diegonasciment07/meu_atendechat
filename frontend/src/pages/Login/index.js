@@ -14,7 +14,7 @@ import { versionSystem } from "../../../package.json";
 import { i18n } from "../../translate/i18n";
 import { nomeEmpresa } from "../../../package.json";
 import { AuthContext } from "../../context/Auth/AuthContext";
-import logo from "../../assets/logo2.png";
+import logo from "../../assets/logo.png";
 import {LanguageOutlined} from "@material-ui/icons";
 import {IconButton, Menu, MenuItem} from "@material-ui/core";
 import LanguageControl from "../../components/LanguageControl";
@@ -37,9 +37,9 @@ const useStyles = makeStyles(theme => ({
 	root: {
 		width: "100vw",
 		height: "100vh",
-		background: "linear-gradient(to right, #161778 , #0a051e)",
+		//background: "linear-gradient(to right, #682EE3 , #682EE3 , #682EE3)",
 		//backgroundImage: "url(https://i.imgur.com/CGby9tN.png)",
-		//backgroundColor: theme.palette.primary.main,
+		backgroundColor: theme.palette.primary.main,
 		backgroundRepeat: "no-repeat",
 		backgroundSize: "100% 100%",
 		backgroundPosition: "center",
@@ -68,11 +68,6 @@ const useStyles = makeStyles(theme => ({
 	},
 	submit: {
 		margin: theme.spacing(3, 0, 2),
-		backgroundColor: "#21ADAD",
-		color: "white",
-		"&:hover": {
-			backgroundColor: "#1e9999",
-		},
 	},
 	powered: {
 		color: "white"
@@ -197,6 +192,7 @@ const Login = () => {
 						type="submit"
 						fullWidth
 						variant="contained"
+						color="primary"
 						className={classes.submit}
 					>
 						{i18n.t("login.buttons.submit")}

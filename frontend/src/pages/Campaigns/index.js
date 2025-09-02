@@ -293,7 +293,7 @@ const Campaigns = () => {
                   fullWidth
                   variant="contained"
                   onClick={handleOpenCampaignModal}
-                  color="#1FE0A4"
+                  color="primary"
                 >
                   {i18n.t("campaigns.buttons.add")}
                 </Button>

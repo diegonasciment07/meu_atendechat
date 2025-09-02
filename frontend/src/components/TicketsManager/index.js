@@ -41,8 +41,7 @@ const useStyles = makeStyles((theme) => ({
 
   tabsHeader: {
     flex: "none",
-    backgroundColor: theme.palette.sidebarBackground,
-    color: theme.palette.sidebarText,
+    backgroundColor: theme.palette.background.default,
   },
 
   settingsIcon: {
@@ -60,22 +59,21 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: theme.palette.sidebarBackground,
+    backgroundColor: theme.palette.background.paper,
     padding: theme.spacing(1),
   },
 
   serachInputWrapper: {
     flex: 1,
-    backgroundColor: theme.palette.sidebarBackground,
+    backgroundColor: theme.palette.background.default,
     display: "flex",
     borderRadius: 40,
     padding: 4,
     marginRight: theme.spacing(1),
-    border: `1px solid ${theme.palette.mode === 'dark' ? '#333' : '#ddd'}`,
   },
 
   searchIcon: {
-    color: theme.palette.sidebarIcon,
+    color: theme.palette.primary.main,
     marginLeft: 6,
     marginRight: 6,
     alignSelf: "center",
@@ -87,12 +85,6 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 25,
     padding: "10px",
     outline: "none",
-    backgroundColor: "transparent",
-    color: theme.palette.sidebarText,
-    "&::placeholder": {
-      color: theme.palette.sidebarIcon,
-      opacity: 0.7,
-    },
   },
 
   badge: {
@@ -107,14 +99,7 @@ const useStyles = makeStyles((theme) => ({
   searchContainer: {
     display: "flex",
     padding: "10px",
-    borderBottom: `2px solid ${theme.palette.mode === 'dark' ? '#333' : 'rgba(0, 0, 0, .12)'}`,
-  },
-  
-  formControlLabel: {
-    color: theme.palette.sidebarText,
-    "& .MuiTypography-root": {
-      color: theme.palette.sidebarText,
-    },
+    borderBottom: "2px solid rgba(0, 0, 0, .12)",
   },
 }));
 
@@ -248,7 +233,6 @@ const TicketsManager = () => {
             <FormControlLabel
               label={i18n.t("tickets.buttons.showAll")}
               labelPlacement="start"
-              className={classes.formControlLabel}
               control={
                 <Switch
                   size="small"
