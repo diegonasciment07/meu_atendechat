@@ -416,13 +416,15 @@ const LoggedInLayout = ({ children, themeToggle }) => {
           </Typography>
           
           <div>
-            <IconButton edge="start">
+            <IconButton 
+              edge="start"
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handlemenuLanguage}
+              variant="contained"
+            >
               <LanguageOutlined
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handlemenuLanguage}
-                variant="contained"
                 style={{ color: "white",marginRight:10 }}
               />
             </IconButton>

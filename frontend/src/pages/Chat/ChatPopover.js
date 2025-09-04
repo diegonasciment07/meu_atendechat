@@ -129,11 +129,19 @@ export default function ChatPopover() {
   }, [searchParam]);
 
   useEffect(() => {
+    let isMounted = true;
+    const abortController = new AbortController();
     setLoading(true);
     const delayDebounceFn = setTimeout(() => {
-      fetchChats();
+      if (isMounted) {
+        fetchChats(abortController.signal);
+      }
     }, 500);
-    return () => clearTimeout(delayDebounceFn);
+    return () => {
+      isMounted = false;
+      abortController.abort();
+      clearTimeout(delayDebounceFn);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParam, pageNumber]);
 
@@ -158,7 +166,7 @@ export default function ChatPopover() {
       }
     });
     return () => {
-      socket.disconnect();
+      socket.off(`company-${companyId}-chat`);
     };
   }, [socketManager, user.id]);
 
@@ -180,16 +188,20 @@ export default function ChatPopover() {
     }
   }, [chats, user.id]);
 
-  const fetchChats = async () => {
+  const fetchChats = async (signal) => {
     try {
       const { data } = await api.get("/chats/", {
         params: { searchParam, pageNumber },
+        signal: signal
       });
       dispatch({ type: "LOAD_CHATS", payload: data.records });
       setHasMore(data.hasMore);
       setLoading(false);
     } catch (err) {
-      toastError(err);
+      if (err.name !== 'AbortError') {
+        toastError(err);
+      }
+      setLoading(false);
     }
   };
 

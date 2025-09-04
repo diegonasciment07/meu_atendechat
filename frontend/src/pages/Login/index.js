@@ -113,12 +113,14 @@ const Login = () => {
 	return (
 		<div className={classes.root}>
 		<div className={classes.languageControl}>
-			<IconButton edge="start">
+			<IconButton 
+				edge="start"
+				aria-label="account of current user"
+				aria-controls="menu-appbar"
+				aria-haspopup="true"
+				onClick={handlemenuLanguage}
+			>
 				<LanguageOutlined
-					aria-label="account of current user"
-					aria-controls="menu-appbar"
-					aria-haspopup="true"
-					onClick={handlemenuLanguage}
 					variant="contained"
 					style={{ color: "white",marginRight:10 }}
 				/>
