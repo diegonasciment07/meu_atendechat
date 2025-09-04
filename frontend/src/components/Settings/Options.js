@@ -86,10 +86,6 @@ export default function Options(props) {
   const [callType, setCallType] = useState("enabled");
   const [chatbotType, setChatbotType] = useState("");
   const [CheckMsgIsGroup, setCheckMsgIsGroupType] = useState("enabled");
-  
-  // Estados para controlar as abas
-  const [integrationsTab, setIntegrationsTab] = useState(0);
-  const [asaasTab, setAsaasTab] = useState(0);
 
   const [loadingUserRating, setLoadingUserRating] = useState(false);
   const [loadingScheduleType, setLoadingScheduleType] = useState(false);
@@ -556,14 +552,13 @@ export default function Options(props) {
           scrollButtons="on"
           variant="scrollable"
           className={classes.tab}
-          value={integrationsTab}
-          onChange={(e, newValue) => setIntegrationsTab(newValue)}
           style={{
             marginBottom: 20,
             marginTop: 20
           }}
         >
           <Tab
+
             label={i18n.t("settings.options.tabs.integrations")} />
 
         </Tabs>
@@ -703,8 +698,6 @@ export default function Options(props) {
           scrollButtons="on"
           variant="scrollable"
           className={classes.tab}
-          value={asaasTab}
-          onChange={(e, newValue) => setAsaasTab(newValue)}
         >
           <Tab label="ASAAS" />
 
