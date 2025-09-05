@@ -11,7 +11,7 @@ Na primeira execução, o sistema automaticamente:
 3. **Configura Certbot** para renovação automática
 4. **Cria scripts** de renovação e cron jobs
 
-## 📋 Pré-requisitos
+## 📋 Pré-requisitos a
 
 - **Domínio configurado** apontando para o servidor
 - **Porta 80 e 443** liberadas no firewall
