@@ -1,10 +1,10 @@
 # Atendechat
 
-O Atendechat é uma empresa distribuidora de White Label que possui uma solução de atendimentos via Whatsapp que aumenta a produtividade e organização das equipes
+O AtendeJimmy é uma empresa distribuidora de White Label que possui uma solução de atendimentos via Whatsapp que aumenta a produtividade e organização das equipes
 
 ## 🚀 Começando
 
-O repositório do Atendechat possui 3 pastas importantes:
+O repositório do AtendeJimmy possui 3 pastas importantes:
 - backend
 - frontend
 - instalador
@@ -178,6 +178,6 @@ Versão 1.0.0
 
 Este projeto está sob a licença
 
-⌨️ com ❤️ por [Atendechat](https://atendechat.com) 😊
+⌨️ com ❤️ por [Atendechat](https://AtendeJimmy.com.br) 😊
 
-Todos os direitos reservados a https://atendechat.com
+Todos os direitos reservados a https://AtendeJimmy.com.br
