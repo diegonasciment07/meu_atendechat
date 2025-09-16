@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.json",
+  "exclude": [
+    "src/services/IntegrationsServices/OpenAiService.ts",
+    "src/services/WbotServices/wbotMessageListener.ts",
+    "node_modules"
+  ]
+}
