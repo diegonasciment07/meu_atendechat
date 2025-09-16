@@ -34,8 +34,9 @@ const LanguageControl = () => {
                 onChange={handleLanguageChange}
                 row
             >
-                <FormControlLabel value="es" control={<Radio />} label="Español" />
+                <FormControlLabel value="pt" control={<Radio />} label="Português (BR)" />
                 <FormControlLabel value="en" control={<Radio />} label="English" />
+                <FormControlLabel value="es" control={<Radio />} label="Español" />
             </RadioGroup>
         </div>
     );

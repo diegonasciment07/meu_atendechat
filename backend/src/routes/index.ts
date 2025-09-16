@@ -34,8 +34,6 @@ import forgotsRoutes from "./forgotPasswordRoutes";
 import flowDefaultRoutes from "./flowDefaultRoutes";
 import flowBuilder from "./flowBuilderRoutes";
 import flowCampaignRoutes from "./flowCampaignRoutes";
-import userAiRoutes from "./userAiRoutes";
-
 const routes = Router();
 
 routes.use(userRoutes);
@@ -59,7 +57,6 @@ routes.use(scheduleRoutes);
 routes.use(tagRoutes);
 routes.use(contactListRoutes);
 routes.use(contactListItemRoutes);
-routes.use("/user-ai", userAiRoutes);
 routes.use(campaignRoutes);
 routes.use(campaignSettingRoutes);
 routes.use(announcementRoutes);
@@ -73,8 +70,7 @@ routes.use(queueIntegrationRoutes);
 routes.use(forgotsRoutes);
 
 routes.use(flowDefaultRoutes);
-routes.use(flowBuilder);
-routes.use(flowCampaignRoutes);
-
+routes.use(flowBuilder)
+routes.use(flowCampaignRoutes)
 
 export default routes;
