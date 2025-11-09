@@ -50,35 +50,57 @@ const App = () => {
                 },
             },
             palette: {
-                type: mode,
-                primary: { main: mode === "light" ? "#682EE3" : "#FFFFFF" },
-                textPrimary: mode === "light" ? "#682EE3" : "#FFFFFF",
-                borderPrimary: mode === "light" ? "#682EE3" : "#FFFFFF",
-                dark: { main: mode === "light" ? "#333333" : "#F3F3F3" },
-                light: { main: mode === "light" ? "#F3F3F3" : "#333333" },
-                tabHeaderBackground: mode === "light" ? "#EEE" : "#666",
-                optionsBackground: mode === "light" ? "#fafafa" : "#333",
-				options: mode === "light" ? "#fafafa" : "#666",
-				fontecor: mode === "light" ? "#128c7e" : "#fff",
-                fancyBackground: mode === "light" ? "#fafafa" : "#333",
-				bordabox: mode === "light" ? "#eee" : "#333",
-				newmessagebox: mode === "light" ? "#eee" : "#333",
-				inputdigita: mode === "light" ? "#fff" : "#666",
-				contactdrawer: mode === "light" ? "#fff" : "#666",
-				announcements: mode === "light" ? "#ededed" : "#333",
-				login: mode === "light" ? "#fff" : "#1C1C1C",
-				announcementspopover: mode === "light" ? "#fff" : "#666",
-				chatlist: mode === "light" ? "#eee" : "#666",
-				boxlist: mode === "light" ? "#ededed" : "#666",
-				boxchatlist: mode === "light" ? "#ededed" : "#333",
-                total: mode === "light" ? "#fff" : "#222",
-                messageIcons: mode === "light" ? "grey" : "#F3F3F3",
-                inputBackground: mode === "light" ? "#FFFFFF" : "#333",
-                barraSuperior: mode === "light" ? "linear-gradient(to right, #682EE3, #682EE3 , #682EE3)" : "#666",
-				boxticket: mode === "light" ? "#EEE" : "#666",
-				campaigntab: mode === "light" ? "#ededed" : "#666",
-				mediainput: mode === "light" ? "#ededed" : "#1c1c1c",
-            },
+  type: mode,
+
+  // Cores principais
+  primary: { main: mode === "light" ? "#0F3D35" : "#C6A664" },
+  textPrimary: mode === "light" ? "#0F3D35" : "#F4F4F4",
+  borderPrimary: mode === "light" ? "#C6A664" : "#C6A664",
+
+  // Tons de contraste
+  dark: { main: mode === "light" ? "#1E554D" : "#F3F3F3" },
+  light: { main: mode === "light" ? "#F4F4F4" : "#1E554D" },
+
+  // Abas, menus e áreas de fundo
+  tabHeaderBackground: mode === "light" ? "#DCE2DF" : "#0F3D35",
+  optionsBackground: mode === "light" ? "#FFFFFF" : "#1E554D",
+  options: mode === "light" ? "#FFFFFF" : "#1E554D",
+
+  // Cor de texto e ícones
+  fontecor: mode === "light" ? "#0F3D35" : "#F4F4F4",
+
+  // Fundos e containers
+  fancyBackground: mode === "light" ? "#FFFFFF" : "#0F3D35",
+  bordabox: mode === "light" ? "#C6A664" : "#C6A664",
+  newmessagebox: mode === "light" ? "#FFFFFF" : "#1E554D",
+  inputdigita: mode === "light" ? "#FFFFFF" : "#1E554D",
+  contactdrawer: mode === "light" ? "#FFFFFF" : "#1E554D",
+  announcements: mode === "light" ? "#DCE2DF" : "#1E554D",
+  login: mode === "light" ? "#FFFFFF" : "#0B2C27",
+  announcementspopover: mode === "light" ? "#FFFFFF" : "#1E554D",
+  chatlist: mode === "light" ? "#DCE2DF" : "#1E554D",
+  boxlist: mode === "light" ? "#DCE2DF" : "#1E554D",
+  boxchatlist: mode === "light" ? "#DCE2DF" : "#0F3D35",
+  total: mode === "light" ? "#FFFFFF" : "#0F3D35",
+
+  // Ícones e inputs
+  messageIcons: mode === "light" ? "#C6A664" : "#F4F4F4",
+  inputBackground: mode === "light" ? "#FFFFFF" : "#0B2C27",
+
+  // Barra superior e cartões
+  barraSuperior:
+    mode === "light"
+      ? "linear-gradient(to right, #0F3D35, #1E554D)"
+      : "linear-gradient(to right, #0B2C27, #0F3D35)",
+  boxticket: mode === "light" ? "#DCE2DF" : "#1E554D",
+  campaigntab: mode === "light" ? "#DCE2DF" : "#1E554D",
+  mediainput: mode === "light" ? "#DCE2DF" : "#0B2C27",
+
+  // Estados e feedback
+  success: { main: "#C6A664" },
+  error: { main: "#B25B52" },
+},
+
             mode,
         },
         locale
