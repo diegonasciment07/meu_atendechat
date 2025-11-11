@@ -12,11 +12,17 @@ import AppError from "./errors/AppError";
 import routes from "./routes";
 import { logger } from "./utils/logger";
 import { messageQueue, sendScheduledMessages } from "./queues";
+import authGuard from "./middleware/authGuard";
+import { tenantPropagation } from "./middleware/tenantPropagation";
+import { planLimitGuard } from "./middleware/planLimitGuard";
 import bodyParser from 'body-parser';
 
 Sentry.init({ dsn: process.env.SENTRY_DSN });
 
 const app = express();
+
+app.use(authGuard);
+app.use(tenantPropagation);
 
 app.set("queues", {
   messageQueue,

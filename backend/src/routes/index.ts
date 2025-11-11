@@ -34,10 +34,12 @@ import forgotsRoutes from "./forgotPasswordRoutes";
 import flowDefaultRoutes from "./flowDefaultRoutes";
 import flowBuilder from "./flowBuilderRoutes";
 import flowCampaignRoutes from "./flowCampaignRoutes";
+import supabaseAuthRoutes from "./supabaseAuthRoutes";
 const routes = Router();
 
 routes.use(userRoutes);
 routes.use("/auth", authRoutes);
+routes.use("/supabase-auth", supabaseAuthRoutes);
 routes.use(settingRoutes);
 routes.use(contactRoutes);
 routes.use(ticketRoutes);
