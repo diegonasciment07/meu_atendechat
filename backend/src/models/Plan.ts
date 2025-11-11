@@ -7,7 +7,8 @@ import {
   PrimaryKey,
   AutoIncrement,
   AllowNull,
-  Unique
+  Unique,
+  DataType
 } from "sequelize-typescript";
 
 @Table
@@ -33,6 +34,15 @@ class Plan extends Model<Plan> {
 
   @Column
   value: number;
+
+  @Column(DataType.FLOAT)
+  price!: number;
+
+  @Column(DataType.JSONB)
+  limits!: object;
+
+  @Column(DataType.JSONB)
+  overage!: object;
 
   @CreatedAt
   createdAt: Date;

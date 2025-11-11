@@ -9,6 +9,9 @@ interface TokenPayload {
   username: string;
   profile: string;
   companyId: number;
+  email?: string;
+  tenantId?: string;
+  roles?: string[];
   iat: number;
   exp: number;
 }
@@ -24,11 +27,14 @@ const isAuth = (req: Request, res: Response, next: NextFunction): void => {
 
   try {
     const decoded = verify(token, authConfig.secret);
-    const { id, profile, companyId } = decoded as TokenPayload;
+    const { id, profile, companyId, email, tenantId, roles } = decoded as TokenPayload;
     req.user = {
       id,
+      email: email || `user-${id}@legacy.local`,
       profile,
-      companyId
+      companyId,
+      tenantId: tenantId || `company-${companyId}`,
+      roles: roles || [profile]
     };
   } catch (err) {
     throw new AppError("Invalid token. We'll try to assign a new one on next request", 403 );

@@ -12,7 +12,7 @@ module.exports = {
               users: 10,
               connections: 10,
               queues: 10,
-              value: 30,
+              price: 30,
               createdAt: new Date(),
               updatedAt: new Date()
             }
