@@ -42,7 +42,6 @@ import { FlowBuilderModel } from "../models/FlowBuilder";
 import { FlowAudioModel } from "../models/FlowAudio";
 import { FlowCampaignModel } from "../models/FlowCampaign";
 import { FlowImgModel } from "../models/FlowImg";
-import { setupTenantHooks } from "../middleware/tenantContext";
 
 // eslint-disable-next-line
 const dbConfig = require("../config/database");
@@ -97,8 +96,5 @@ const models = [
 ];
 
 sequelize.addModels(models);
-
-// Setup tenant isolation hooks
-setupTenantHooks(sequelize);
 
 export default sequelize;
