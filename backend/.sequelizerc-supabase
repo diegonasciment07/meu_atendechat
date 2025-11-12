@@ -1,0 +1,60 @@
+require('dotenv').config();
+
+module.exports = {
+  development: {
+    dialect: 'postgres',
+    use_env_variable: 'DATABASE_URL',
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    },
+    define: {
+      charset: "utf8mb4",
+      collate: "utf8mb4_bin"
+    },
+    timezone: "-03:00",
+    logging: false,
+    pool: {
+      max: 20,
+      min: 1,
+      acquire: 30000,
+      idle: 30000
+    }
+  },
+  
+  test: {
+    dialect: 'postgres',
+    use_env_variable: 'DATABASE_URL',
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    }
+  },
+  
+  production: {
+    dialect: 'postgres',
+    use_env_variable: 'DATABASE_URL',
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    },
+    define: {
+      charset: "utf8mb4",
+      collate: "utf8mb4_bin"
+    },
+    timezone: "-03:00",
+    logging: false,
+    pool: {
+      max: 20,
+      min: 1,
+      acquire: 30000,
+      idle: 30000
+    }
+  }
+};
