@@ -1,0 +1,66 @@
+
+/* === Fale Direito Theme v2 === */
+:root {
+  --fd-primary: #0A7F5A;
+  --fd-primary-700: #08664A;
+  --fd-primary-600: #0c7453;
+  --fd-primary-50: #E8F7F2;
+  --fd-accent: #16A34A;
+  --fd-text: #123C36;
+  --fd-muted: #6B7A78;
+  --fd-bg: #F2F7F5;
+  --fd-white: #ffffff;
+  --fd-shadow: 0 8px 24px rgba(8,102,74, 0.12);
+}
+
+/* Smooth animations */
+:root {
+  --fd-trans-fast: .15s;
+  --fd-trans-med: .3s;
+}
+* { transition: color var(--fd-trans-med), background-color var(--fd-trans-med), box-shadow var(--fd-trans-med), transform var(--fd-trans-fast); }
+
+/* Headers */
+#fd-header {
+  position: sticky;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: linear-gradient(135deg, var(--fd-primary), var(--fd-accent));
+  color: var(--fd-white);
+  box-shadow: var(--fd-shadow);
+}
+.fd-header-inner {
+  display: flex; align-items: center; gap: 14px;
+  padding: 10px 16px;
+}
+.fd-header-logo { height: 32px; width: auto; object-fit: contain; }
+.fd-header-title-wrap { display: flex; flex-direction: column; line-height: 1.15; }
+.fd-header-title { font-weight: 800; font-size: 1.1rem; letter-spacing: .2px; }
+.fd-header-sub { opacity: .9; font-size: .9rem; font-weight: 500; }
+
+/* Footer */
+#fd-footer {
+  color: var(--fd-muted);
+  text-align: center;
+  font-size: .85rem;
+  padding: 14px 10px;
+}
+
+/* Buttons / Cards hover elevation */
+button, .btn, [role="button"] { border-radius: 10px !important; box-shadow: var(--fd-shadow); }
+button:hover, .btn:hover { transform: translateY(-1px); box-shadow: 0 10px 26px rgba(8,102,74,.18); }
+.card, .panel, .box, .container, .shadow, .elevation-1 {
+  border: none !important; border-radius: 16px !important; box-shadow: var(--fd-shadow) !important; background: var(--fd-white) !important;
+}
+
+/* Login gradient */
+body.fd-login-gradient {
+  min-height: 100vh;
+  background:
+    radial-gradient(1200px 400px at top center, rgba(22,163,74,0.16), transparent),
+    linear-gradient(135deg, var(--fd-primary), var(--fd-accent));
+}
+
+/* Generic content wrapper spacing (when header is sticky) */
+body { padding-top: 56px; }
+@media (max-width: 480px) { body { padding-top: 52px; } }
