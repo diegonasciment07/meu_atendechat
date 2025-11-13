@@ -1,55 +1,71 @@
-FROM node:20-alpine
+# -----------------------------------------------------------------
+# DOCKERFILE ESTÁVEL PARA O FRONTEND - FALE DIREITO
+# Compatível com dependências antigas e novas
+# Node 18 (seguro) + Yarn com tolerância de engines
+# -----------------------------------------------------------------
+FROM node:18-alpine
 
 WORKDIR /app
 
-# Install serve globally
+# -----------------------------------------------------------------
+# 1️⃣ Instala o "serve" (para servir o build final)
+# -----------------------------------------------------------------
 RUN npm install -g serve
 
-COPY frontend/package*.json ./
-COPY frontend/yarn.lock ./
-COPY frontend/node_modules ./node_modules
-COPY frontend/ .
+# -----------------------------------------------------------------
+# 2️⃣ Copia o package.json (sem usar package-lock, pois o projeto é Yarn)
+# -----------------------------------------------------------------
+COPY frontend/package.json ./
 
-RUN rm -f .env 
+# -----------------------------------------------------------------
+# 3️⃣ Define variáveis para evitar erros de build e engines incompatíveis
+# -----------------------------------------------------------------
+ENV YARN_IGNORE_ENGINES=true
+ENV SKIP_PREFLIGHT_CHECK=true
+ENV NODE_OPTIONS=--openssl-legacy-provider
 
-ARG REACT_APP_BACKEND_URL
-ENV REACT_APP_BACKEND_URL=$REACT_APP_BACKEND_URL
+# -----------------------------------------------------------------
+# 4️⃣ Instala dependências de forma tolerante e confiável
+# -----------------------------------------------------------------
+RUN yarn install --ignore-engines --network-timeout 600000
 
-ARG REACT_APP_HOURS_CLOSE_TICKETS_AUTO
-ENV REACT_APP_HOURS_CLOSE_TICKETS_AUTO=$REACT_APP_HOURS_CLOSE_TICKETS_AUTO
-
-ARG STACK_NAME
-ENV STACK_NAME=$STACK_NAME
-
-ARG REACT_APP_COLOR
-ENV REACT_APP_COLOR=$REACT_APP_COLOR
-
-ARG REACT_APP_TAB_NAME
-ENV REACT_APP_TAB_NAME=$REACT_APP_TAB_NAME
-
-COPY frontend/update_tab_name.sh ./
-RUN chmod +x update_tab_name.sh
-RUN ./update_tab_name.sh
-
-COPY frontend/update_app_color.sh ./
-RUN chmod +x update_app_color.sh
-RUN ./update_app_color.sh
-
-RUN mkdir -p ./brands
+# -----------------------------------------------------------------
+# 5️⃣ Copia o resto do código do frontend
+# -----------------------------------------------------------------
+COPY frontend/ ./
 COPY brands ./brands
 
-COPY frontend/copy_brand_assets.sh ./
-RUN chmod +x copy_brand_assets.sh
-RUN ./copy_brand_assets.sh
+# -----------------------------------------------------------------
+# 6️⃣ Executa scripts de personalização (cores, marca, etc)
+# -----------------------------------------------------------------
+RUN rm -f .env
+
+COPY frontend/update_tab_name.sh ./update_tab_name.sh
+RUN chmod +x update_tab_name.sh && ./update_tab_name.sh
+
+COPY frontend/update_app_color.sh ./update_app_color.sh
+RUN chmod +x update_app_color.sh && ./update_app_color.sh
+
+COPY frontend/copy_brand_assets.sh ./copy_brand_assets.sh
+RUN chmod +x copy_brand_assets.sh && ./copy_brand_assets.sh
 
 RUN rm -rf ./brands
 
-RUN yarn build
-
-EXPOSE 3001
-
+# -----------------------------------------------------------------
+# 7️⃣ Configura variáveis de ambiente para build React
+# -----------------------------------------------------------------
+ENV BABEL_ENV=production
+ENV CI=false
 ENV HOST=0.0.0.0
-ENV PORT=3001
+ENV GENERATE_SOURCEMAP=false
 
-# Serve the built application
-CMD ["serve", "-s", "build", "-l", "3001"] 
+# -----------------------------------------------------------------
+# 8️⃣ Gera o build otimizado (com suporte legacy SSL e Babel)
+# -----------------------------------------------------------------
+RUN yarn run build || npm run build
+
+# -----------------------------------------------------------------
+# 9️⃣ Expõe a porta e define o comando final
+# -----------------------------------------------------------------
+EXPOSE 3001
+CMD ["serve", "-s", "build", "-l", "3001"]

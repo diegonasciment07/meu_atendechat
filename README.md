@@ -181,3 +181,4 @@ Este projeto está sob a licença
 ⌨️ com ❤️ por [Atendechat](https://atendechat.com) 😊
 
 Todos os direitos reservados a https://atendechat.com
+# faledireito
