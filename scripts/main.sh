@@ -119,8 +119,8 @@ parse_args() {
     FRONTEND_URL=""
     TOTAL_CPU="2"
     TOTAL_MEMORY="2048"
-    COLOR="#682EE3"
-    TAB_NAME="Atendechat"
+    COLOR="#4169e1"
+    TAB_NAME="Alvo Aguia"
     
     # Variáveis do módulo financeiro
     ENABLE_FINANCIAL="false"
