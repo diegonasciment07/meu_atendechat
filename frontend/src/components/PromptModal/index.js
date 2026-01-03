@@ -68,6 +68,19 @@ const useStyles = makeStyles(theme => ({
         borderRadius: theme.spacing(1),
         background: theme.palette.type === "light" ? "#fff" : theme.palette.background.default,
     },
+    sliderRoot: {
+        paddingLeft: theme.spacing(2.5),
+        paddingRight: theme.spacing(2.5),
+    },
+    sliderLabelsRow: {
+        display: "flex",
+        justifyContent: "space-between",
+        paddingLeft: theme.spacing(2.5),
+        paddingRight: theme.spacing(2.5),
+        marginTop: theme.spacing(0.5),
+        color: theme.palette.text.primary,
+        fontSize: "0.9rem",
+    },
     optionBadge: {
         display: "inline-flex",
         alignItems: "center",
@@ -105,9 +118,9 @@ const PromptModal = ({ open, onClose, promptId, refreshPrompts }) => {
     ];
 
     const temperatureMarks = [
-        { value: 0, label: "Objetivo" },
-        { value: 0.5, label: "Equilíbrio" },
-        { value: 1, label: "Criativo" }
+        { value: 0, label: "" },
+        { value: 0.5, label: "" },
+        { value: 1, label: "" }
     ];
 
     const handleToggleApiKey = () => {
@@ -318,6 +331,7 @@ const PromptModal = ({ open, onClose, promptId, refreshPrompts }) => {
                                                     {i18n.t("promptModal.form.temperature")} (0 = respostas estáveis, 1 = criativas)
                                                 </Typography>
                                                 <Slider
+                                                    classes={{ root: classes.sliderRoot }}
                                                     value={Number(values.temperature)}
                                                     step={0.1}
                                                     min={0}
@@ -326,6 +340,11 @@ const PromptModal = ({ open, onClose, promptId, refreshPrompts }) => {
                                                     valueLabelDisplay="auto"
                                                     marks={temperatureMarks}
                                                 />
+                                                <Box className={classes.sliderLabelsRow}>
+                                                    <span>Objetivo</span>
+                                                    <span>Equilíbrio</span>
+                                                    <span>Criativo</span>
+                                                </Box>
                                             </Box>
                                             {touched.temperature && errors.temperature && (
                                                 <Typography variant="caption" color="error">

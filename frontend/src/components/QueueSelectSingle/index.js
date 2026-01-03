@@ -4,6 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
+import InputLabel from "@material-ui/core/InputLabel";
 import toastError from "../../errors/toastError";
 import api from "../../services/api";
 import { i18n } from "../../translate/i18n";
@@ -11,12 +12,11 @@ import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles(theme => ({
     formControl: {
-        margin: theme.spacing(1),
-        minWidth: 120,
+        marginTop: theme.spacing(1),
     },
 }));
 
-const QueueSelectSingle = (touched, errors) => {
+const QueueSelectSingle = ({ touched = {}, errors = {} }) => {
     const classes = useStyles();
     const [queues, setQueues] = useState([]);
 
@@ -32,36 +32,36 @@ const QueueSelectSingle = (touched, errors) => {
     }, []);
 
     return (
-        <div style={{ marginTop: 6 }}>
-            <FormControl
-                variant="outlined"
-                className={classes.FormControl}
-                margin="dense"
+        <FormControl
+            variant="outlined"
+            className={classes.formControl}
+            margin="dense"
+            fullWidth
+        >
+            <InputLabel id="queue-selection-label">
+                {i18n.t("queueSelect.inputLabel")}
+            </InputLabel>
+            <Field
+                as={Select}
+                labelId="queue-selection-label"
+                id="queue-selection"
+                name="queueId"
+                label={i18n.t("queueSelect.inputLabel")}
+                error={touched.queueId && Boolean(errors.queueId)}
                 fullWidth
             >
-                <div>
-                    <Typography>
-                        {i18n.t("queueSelect.inputLabel")}
-                    </Typography>
-                    <Field
-                        as={Select}
-                        label={i18n.t("queueSelect.inputLabel")}
-                        name="queueId"
-                        labelId="queue-selection-label"
-                        id="queue-selection"
-                        error={touched.queueId && Boolean(errors.queueId)}
-                        helpertext={touched.name && errors.name}
-                        fullWidth
-                    >
-                        {queues.map(queue => (
-                            <MenuItem key={queue.id} value={queue.id}>
-                                {queue.name}
-                            </MenuItem>
-                        ))}
-                    </Field>
-                </div>
-            </FormControl>
-        </div>
+                {queues.map(queue => (
+                    <MenuItem key={queue.id} value={queue.id}>
+                        {queue.name}
+                    </MenuItem>
+                ))}
+            </Field>
+            {touched.queueId && errors.queueId && (
+                <Typography variant="caption" color="error">
+                    {errors.queueId}
+                </Typography>
+            )}
+        </FormControl>
     );
 };
 
