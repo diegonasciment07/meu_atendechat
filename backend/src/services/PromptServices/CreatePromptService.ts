@@ -16,10 +16,23 @@ interface PromptData {
     maxMessages?: number;
     companyId: string | number;
     model: string;
+    knowledgeBaseSites?: string[];
+    knowledgeBaseFiles?: Array<{ name: string; size: number; type: string; data: string }>;
+    knowledgeBaseContext?: string;
 }
 
 const CreatePromptService = async (promptData: PromptData): Promise<Prompt> => {
-    const { name, apiKey, prompt, queueId,maxMessages,companyId } = promptData;
+    const {
+        name,
+        apiKey,
+        prompt,
+        queueId,
+        maxMessages,
+        companyId,
+        knowledgeBaseFiles,
+        knowledgeBaseSites,
+        knowledgeBaseContext
+    } = promptData;
 
     const promptSchema = Yup.object().shape({
         name: Yup.string().required("ERR_PROMPT_NAME_INVALID"),
@@ -36,7 +49,14 @@ const CreatePromptService = async (promptData: PromptData): Promise<Prompt> => {
         throw new AppError(`${JSON.stringify(err, undefined, 2)}`);
     }
 
-    let promptTable = await Prompt.create(promptData);
+    const safePayload: PromptData = {
+        ...promptData,
+        knowledgeBaseFiles: knowledgeBaseFiles || [],
+        knowledgeBaseSites: knowledgeBaseSites || [],
+        knowledgeBaseContext: knowledgeBaseContext || ""
+    };
+
+    let promptTable = await Prompt.create(safePayload);
     promptTable = await ShowPromptService({ promptId: promptTable.id, companyId });
 
     return promptTable;

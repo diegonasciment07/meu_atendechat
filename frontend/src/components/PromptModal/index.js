@@ -14,8 +14,8 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { i18n } from "../../translate/i18n";
-import { MenuItem, FormControl, InputLabel, Select, Grid, Typography, Slider, Box } from "@material-ui/core";
-import { Visibility, VisibilityOff } from "@material-ui/icons";
+import { MenuItem, FormControl, InputLabel, Select, Grid, Typography, Slider, Box, Chip } from "@material-ui/core";
+import { Visibility, VisibilityOff, CloudUpload, DeleteOutline } from "@material-ui/icons";
 import { InputAdornment, IconButton } from "@material-ui/core";
 import QueueSelectSingle from "../../components/QueueSelectSingle";
 
@@ -68,18 +68,42 @@ const useStyles = makeStyles(theme => ({
         borderRadius: theme.spacing(1),
         background: theme.palette.type === "light" ? "#fff" : theme.palette.background.default,
     },
+    sliderContent: {
+        display: "flex",
+        flexDirection: "column",
+        gap: theme.spacing(1),
+        paddingLeft: theme.spacing(3),
+        paddingRight: theme.spacing(3),
+    },
     sliderRoot: {
-        paddingLeft: theme.spacing(2.5),
-        paddingRight: theme.spacing(2.5),
+        paddingLeft: 0,
+        paddingRight: 0,
     },
     sliderLabelsRow: {
         display: "flex",
         justifyContent: "space-between",
-        paddingLeft: theme.spacing(2.5),
-        paddingRight: theme.spacing(2.5),
-        marginTop: theme.spacing(0.5),
+        paddingLeft: 0,
+        paddingRight: 0,
         color: theme.palette.text.primary,
         fontSize: "0.9rem",
+    },
+    knowledgeUploadBox: {
+        border: `1px dashed ${theme.palette.divider}`,
+        borderRadius: theme.spacing(1),
+        padding: theme.spacing(2),
+        background: theme.palette.type === "light" ? "#fff" : theme.palette.background.default,
+        display: "flex",
+        flexDirection: "column",
+        gap: theme.spacing(1),
+    },
+    knowledgeFilesList: {
+        display: "flex",
+        flexWrap: "wrap",
+        gap: theme.spacing(1),
+    },
+    knowledgeSectionHelper: {
+        color: theme.palette.text.secondary,
+        marginTop: theme.spacing(0.5),
     },
     optionBadge: {
         display: "inline-flex",
@@ -123,6 +147,55 @@ const PromptModal = ({ open, onClose, promptId, refreshPrompts }) => {
         { value: 1, label: "" }
     ];
 
+    const fileToBase64 = (file) =>
+        new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const result = reader.result;
+                const base64 = typeof result === "string" ? result.split(",")[1] : "";
+                resolve({
+                    name: file.name,
+                    size: file.size,
+                    type: file.type,
+                    data: base64
+                });
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+
+    const formatSitesInput = (value = "") =>
+        value
+            .split(/\n|,/)
+            .map(item => item.trim())
+            .filter(Boolean);
+
+    const formatFileSize = (size) => {
+        if (!size) return "";
+        if (size < 1024) return `${size} B`;
+        if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
+        return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+    };
+
+    const handlePdfChange = async (event, currentFiles, setFieldValue) => {
+        const files = Array.from(event.target.files || []).filter(file => file.type === "application/pdf");
+        if (!files.length) return;
+
+        try {
+            const uploaded = await Promise.all(files.map(fileToBase64));
+            setFieldValue("knowledgeBaseFiles", [...(currentFiles || []), ...uploaded]);
+        } catch (err) {
+            toast.error("Não foi possível ler o PDF. Tente novamente.");
+        } finally {
+            event.target.value = null;
+        }
+    };
+
+    const handleRemovePdf = (index, currentFiles, setFieldValue) => {
+        const nextFiles = (currentFiles || []).filter((_, fileIndex) => fileIndex !== index);
+        setFieldValue("knowledgeBaseFiles", nextFiles);
+    };
+
     const handleToggleApiKey = () => {
         setShowApiKey(!showApiKey);
     };
@@ -135,7 +208,10 @@ const PromptModal = ({ open, onClose, promptId, refreshPrompts }) => {
         temperature: 1,
         apiKey: "",
         queueId: '',
-        maxMessages: 10
+        maxMessages: 10,
+        knowledgeBaseSites: [],
+        knowledgeBaseFiles: [],
+        knowledgeBaseContext: ""
     }), []);
 
     const [prompt, setPrompt] = useState(initialState);
@@ -149,7 +225,13 @@ const PromptModal = ({ open, onClose, promptId, refreshPrompts }) => {
             try {
                 const { data } = await api.get(`/prompt/${promptId}`);
                 setPrompt(prevState => {
-                    return { ...prevState, ...data };
+                    return {
+                        ...prevState,
+                        ...data,
+                        knowledgeBaseSites: data.knowledgeBaseSites || [],
+                        knowledgeBaseFiles: data.knowledgeBaseFiles || [],
+                        knowledgeBaseContext: data.knowledgeBaseContext || ""
+                    };
                 });
                 
                 setSelectedModel(data.model);
@@ -300,6 +382,89 @@ const PromptModal = ({ open, onClose, promptId, refreshPrompts }) => {
 
                                 <Box className={classes.section}>
                                     <Typography variant="subtitle1" className={classes.sectionTitle}>
+                                        Base de conhecimento
+                                    </Typography>
+                                    <Typography variant="body2" className={classes.helper}>
+                                        Alimente o agente com informações oficiais da empresa, produtos ou pessoas. Quanto mais precisa for a base, mais assertivas serão as respostas.
+                                    </Typography>
+                                    <Grid container spacing={2}>
+                                        <Grid item xs={12} md={6}>
+                                            <TextField
+                                                label="Sites de referência (um por linha)"
+                                                variant="outlined"
+                                                margin="dense"
+                                                fullWidth
+                                                multiline
+                                                rows={4}
+                                                value={(values.knowledgeBaseSites || []).join("\n")}
+                                                onChange={(e) => setFieldValue("knowledgeBaseSites", formatSitesInput(e.target.value))}
+                                                placeholder="https://www.seusite.com.br\nhttps://ajuda.seusite.com"
+                                            />
+                                            <Typography variant="caption" className={classes.knowledgeSectionHelper}>
+                                                O agente vai priorizar essas fontes para entender a empresa.
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item xs={12} md={6}>
+                                            <Box className={classes.knowledgeUploadBox}>
+                                                <Box display="flex" alignItems="center" justifyContent="space-between">
+                                                    <Typography variant="subtitle2">Arquivos PDF</Typography>
+                                                    <Button
+                                                        variant="outlined"
+                                                        color="primary"
+                                                        startIcon={<CloudUpload />}
+                                                        component="label"
+                                                    >
+                                                        Selecionar PDFs
+                                                        <input
+                                                            type="file"
+                                                            accept="application/pdf"
+                                                            multiple
+                                                            hidden
+                                                            onChange={(event) => handlePdfChange(event, values.knowledgeBaseFiles, setFieldValue)}
+                                                        />
+                                                    </Button>
+                                                </Box>
+                                                {values.knowledgeBaseFiles && values.knowledgeBaseFiles.length > 0 ? (
+                                                    <Box className={classes.knowledgeFilesList}>
+                                                        {values.knowledgeBaseFiles.map((file, index) => (
+                                                            <Chip
+                                                                key={`${file.name}-${index}`}
+                                                                variant="outlined"
+                                                                label={`${file.name} (${formatFileSize(file.size)})`}
+                                                                onDelete={() => handleRemovePdf(index, values.knowledgeBaseFiles, setFieldValue)}
+                                                                deleteIcon={<DeleteOutline />}
+                                                                color="primary"
+                                                            />
+                                                        ))}
+                                                    </Box>
+                                                ) : (
+                                                    <Typography variant="caption" className={classes.knowledgeSectionHelper}>
+                                                        Envie PDFs com produtos, políticas ou treinamentos. Múltiplos arquivos são aceitos.
+                                                    </Typography>
+                                                )}
+                                            </Box>
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <Field
+                                                as={TextField}
+                                                label="Contexto descritivo da base"
+                                                name="knowledgeBaseContext"
+                                                variant="outlined"
+                                                margin="dense"
+                                                fullWidth
+                                                rows={4}
+                                                multiline
+                                                placeholder="Resumo estruturado sobre a empresa, personas, ofertas, garantias, políticas de suporte, diferenciais, vocabulário proibido, etc."
+                                            />
+                                            <Typography variant="caption" className={classes.knowledgeSectionHelper}>
+                                                Use bullets curtas e dados factuais (preços, SLAs, datas, termos permitidos/proibidos).
+                                            </Typography>
+                                        </Grid>
+                                    </Grid>
+                                </Box>
+
+                                <Box className={classes.section}>
+                                    <Typography variant="subtitle1" className={classes.sectionTitle}>
                                         Configurações do modelo
                                     </Typography>
                                     <Grid container spacing={2}>
@@ -327,23 +492,25 @@ const PromptModal = ({ open, onClose, promptId, refreshPrompts }) => {
                                         </Grid>
                                         <Grid item xs={12} sm={7}>
                                             <Box className={classes.sliderRow}>
-                                                <Typography gutterBottom variant="body2">
-                                                    {i18n.t("promptModal.form.temperature")} (0 = respostas estáveis, 1 = criativas)
-                                                </Typography>
-                                                <Slider
-                                                    classes={{ root: classes.sliderRoot }}
-                                                    value={Number(values.temperature)}
-                                                    step={0.1}
-                                                    min={0}
-                                                    max={1}
-                                                    onChange={(_, value) => setFieldValue("temperature", value)}
-                                                    valueLabelDisplay="auto"
-                                                    marks={temperatureMarks}
-                                                />
-                                                <Box className={classes.sliderLabelsRow}>
-                                                    <span>Objetivo</span>
-                                                    <span>Equilíbrio</span>
-                                                    <span>Criativo</span>
+                                                <Box className={classes.sliderContent}>
+                                                    <Typography gutterBottom variant="body2">
+                                                        {i18n.t("promptModal.form.temperature")} (0 = respostas estáveis, 1 = criativas)
+                                                    </Typography>
+                                                    <Slider
+                                                        classes={{ root: classes.sliderRoot }}
+                                                        value={Number(values.temperature)}
+                                                        step={0.1}
+                                                        min={0}
+                                                        max={1}
+                                                        onChange={(_, value) => setFieldValue("temperature", value)}
+                                                        valueLabelDisplay="auto"
+                                                        marks={temperatureMarks}
+                                                    />
+                                                    <Box className={classes.sliderLabelsRow}>
+                                                        <span>Objetivo</span>
+                                                        <span>Equilíbrio</span>
+                                                        <span>Criativo</span>
+                                                    </Box>
                                                 </Box>
                                             </Box>
                                             {touched.temperature && errors.temperature && (
